@@ -7,4 +7,5 @@ int main(void) {
     if (bmp == NULL) {
         perror("Error reading file\n");
     }
+    bmp_save(bmp, "rebuilt.bmp");
 }
