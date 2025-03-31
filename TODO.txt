@@ -1,0 +1,2 @@
+1. Alterar a indexacao das imagens de [x][y] para [y][x]
+    - indexacao mais natural, pela organizacao de memoria, no fim o que importa eh estar conseistente

@@ -165,9 +165,9 @@ bmp_image* bmp_read(const char* filename) {
     // Iterating through file, rows are bottom on file
     for (int32_t i = (int32_t)bmp->infoHeader->height - 1; i >= 0; i--) {
         for (uint32_t j = 0; j < bmp->infoHeader->width; j++) {
-            fread(&bmp->b_data[i][j], 1, 1, fd);
-            fread(&bmp->g_data[i][j], 1, 1, fd);
-            fread(&bmp->r_data[i][j], 1, 1, fd);
+            fread(&bmp->b_data[j][i], 1, 1, fd);
+            fread(&bmp->g_data[j][i], 1, 1, fd);
+            fread(&bmp->r_data[j][i], 1, 1, fd);
         }
     }
 
