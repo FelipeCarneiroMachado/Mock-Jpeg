@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-
+// Empty bmp allcoation and creation
 bmp_image* new_bmp_image() {
     bmp_image* bmp = (bmp_image*)malloc(sizeof(bmp_image));
     if (bmp == NULL) {
@@ -22,7 +22,7 @@ bmp_image* new_bmp_image() {
     }
     return bmp;
 }
-
+// Memory deallocation for pixel data
 void free_px_matrix(px_t ***matrix, uint32_t nrows, uint32_t ncols) {
     for (uint32_t i = 0; i < nrows; i++) {
         free((*matrix)[i]);
@@ -31,14 +31,16 @@ void free_px_matrix(px_t ***matrix, uint32_t nrows, uint32_t ncols) {
     *(matrix) = NULL;
 }
 
+// Memory eallocation for pixel data
 px_t** px_matrix_alloc(uint32_t height, uint32_t width) {
-    px_t** matrix = (px_t**)malloc(sizeof(px_t*) * width);
+    px_t** matrix = (px_t**)malloc(sizeof(px_t*) * height);
     for (int i = 0; i < height; i++) {
         matrix[i] = (px_t*)malloc(sizeof(px_t) * width);
     }
     return matrix;
 }
 
+// Memory deallocation for bmp struct
 void bmp_free(bmp_image** bmp) {
     if ((*bmp)->header != NULL) {
         free((*bmp)->header);
@@ -59,6 +61,36 @@ void bmp_free(bmp_image** bmp) {
     free(*bmp);
 }
 
+// Bmp allocation with initial size info
+bmp_image * new_bmp(int32_t width, int32_t height) {
+    bmp_image* im = new_bmp_image();
+    // Main header setup
+    im->header->signature[0] = 'B';
+    im->header->signature[1] = 'M';
+    im->header->filesize = 54 + (width * height * 3);
+    im->header->dataOffset = 54;
+    // Info Header setup
+    im->infoHeader->headerSize = 40;
+    im->infoHeader->width = width;
+    im->infoHeader->height = height;
+    im->infoHeader->planes = 1;
+    im->infoHeader->bitsPerPixel = 24;
+    im->infoHeader->compression = 0;
+    im->infoHeader->imageSize = 0;
+    im->infoHeader->horizontalResolution = 0;
+    im->infoHeader->verticalResolution = 0;
+    im->infoHeader->numColors = 0;
+    im->infoHeader->colorsUsed = 16777216;
+
+    // Pixel data setup
+    im->r_data = px_matrix_alloc(height, width);
+    im->g_data = px_matrix_alloc(height, width);
+    im->b_data = px_matrix_alloc(height, width);
+
+    return im;
+}
+
+// Validates if the bmp read fits into the project specification
 bool validate_bmp(bmp_image* bmp) {
     bool flag = true;
     // BM file
@@ -88,7 +120,7 @@ bool validate_bmp(bmp_image* bmp) {
     return flag;
 }
 
-
+// Reads bmp from a file
 bmp_image* bmp_read(const char* filename) {
 
     FILE* fd = fopen(filename, "rb");
@@ -165,15 +197,16 @@ bmp_image* bmp_read(const char* filename) {
     // Iterating through file, rows are bottom on file
     for (int32_t i = (int32_t)bmp->infoHeader->height - 1; i >= 0; i--) {
         for (uint32_t j = 0; j < bmp->infoHeader->width; j++) {
-            fread(&bmp->b_data[j][i], 1, 1, fd);
-            fread(&bmp->g_data[j][i], 1, 1, fd);
-            fread(&bmp->r_data[j][i], 1, 1, fd);
+            fread(&bmp->b_data[i][j], 1, 1, fd);
+            fread(&bmp->g_data[i][j], 1, 1, fd);
+            fread(&bmp->r_data[i][j], 1, 1, fd);
         }
     }
 
     return bmp;
 }
 
+// Saves bmp to a file
 int bmp_save(bmp_image *bmp, const char *filename) {
     FILE* out = fopen(filename, "wb");
     if (out == NULL) {

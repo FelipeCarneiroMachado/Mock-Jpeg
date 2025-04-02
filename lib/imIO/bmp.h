@@ -2,6 +2,9 @@
 // Created by felipe on 3/19/25.
 //
 
+/*
+ * .bmp image input/output + in-code representation
+ */
 #ifndef BMP_H
 #define BMP_H
 #include <stdint.h>
@@ -51,6 +54,9 @@
 
     // TODO: printing all info on headers for debug (AUGUSTO)
     void print_bmp_info(bmp_image *bmp);
+
+    // Create bmp_image with initial info
+    bmp_image* new_bmp(int32_t width, int32_t height);
 
 
 #endif //BMP_H

@@ -55,11 +55,7 @@ void apply_block_DCT_8x8(yCbCr_px** block, yCbCr_px** dest) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             yCbCr_px sum = 0;
-            for (int k = 0; k < 8; k++) {
-                for (int l = 0; l < 8; l++) {
-                    // sum += dct_coefficient_matrix[]
-                }
-            }
+
 
         }
     }
