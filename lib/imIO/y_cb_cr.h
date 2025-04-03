@@ -39,7 +39,7 @@
     void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t width, int32_t height);
 
     // Allocation and initialization
-    YCrCB_image* newYCrCB_image(int32_t width, int32_t height);
+    YCrCB_image* new_YCrCB_image(int32_t width, int32_t height);
 
     // bmp -> YCrCb conversion
     YCrCB_image *bmp_to_yCbCr(bmp_image* img);

@@ -26,8 +26,8 @@ void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t width, int32_t height) {
     *matrix = NULL;
 }
 
-// Initializatio and alllocation for images
-YCrCB_image* newYCrCB_image(int32_t width, int32_t height) {
+// Initialization and alllocation for images
+YCrCB_image* new_YCrCB_image(int32_t width, int32_t height) {
     YCrCB_image* img = (YCrCB_image*)malloc(sizeof(YCrCB_image));
     img->width = width;
     img->height = height;
@@ -57,13 +57,21 @@ yCbCr_px get_Cb(YCrCB_image* img, int32_t y, int32_t x) {
 
 // Conversion bmp -> YCrCb
 YCrCB_image* bmp_to_yCbCr(bmp_image* img) {
-    YCrCB_image* new_img = newYCrCB_image(img->infoHeader->width, img->infoHeader->height);
+    YCrCB_image* new_img = new_YCrCB_image(img->infoHeader->width, img->infoHeader->height);
     for (int i = 0; i < img->infoHeader->height; i++) {
         for (int j = 0; j < img->infoHeader->width; j++) {
             new_img->Y_data[i][j] = (yCbCr_px) 0.299 * img->r_data[i][j] + 0.587 * img->g_data[i][j] + 0.114 * img->b_data[i][j];
             if (i % 2 == 0 && j % 2 == 0) {
-                new_img->Cb_data[i / 2][j / 2] = (yCbCr_px) 0.564 * (img->b_data[i][j] - new_img->Y_data[i][j]);
-                new_img->Cr_data[i / 2][j / 2] = (yCbCr_px) 0.713 * (img->r_data[i][j] - new_img->Y_data[i][j]);
+                new_img->Cb_data[i / 2][j / 2] = 0.564 * (img->b_data[i][j] - new_img->Y_data[i][j]);
+                // new_img->Cb_data[i / 2][j / 2] = ( 0.564 * (img->b_data[i][j] - new_img->Y_data[i][j]) +
+                //                                  0.564 * (img->b_data[i+1][j] - new_img->Y_data[i+1][j]) +
+                //                                      0.564 * (img->b_data[i][j+1] - new_img->Y_data[i][j+1]) +
+                //                                          0.564 * (img->b_data[i+1][j+1] - new_img->Y_data[i+1][j+1])) / 4.0;
+                new_img->Cr_data[i / 2][j / 2] = 0.713 * (img->r_data[i][j] - new_img->Y_data[i][j]);
+                // new_img->Cr_data[i / 2][j / 2] = ( 0.713 * (img->r_data[i][j] - new_img->Y_data[i][j]) +
+                //                                  0.713 * (img->r_data[i][j] - new_img->Y_data[i][j]) +
+                //                                  0.713 * (img->r_data[i][j] - new_img->Y_data[i][j]) +
+                //                                  0.713 * (img->r_data[i][j] - new_img->Y_data[i][j])) / 4;
             }
         }
     }
