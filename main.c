@@ -15,12 +15,12 @@ int main(int argc, char *argv[]) {
     set_compression_factor(strtod(argv[1], NULL));
     YCrCB_image* ycc = bmp_to_yCbCr(bmp);
     dct_YCrCB_image* dcted= DCT_8x8(ycc);
-    int32_t y = 800, x = 640;
-    print_dct_block(dcted, y, x, true, false, false);
+    // int32_t y = 800, x = 640;
+    // print_dct_block(dcted, y, x, true, false, false);
     quantized_dct_image* quantized= dct_quantization_8x8(dcted);
-    print_quantized_block(quantized, y, x, true, false, false);
+    // print_quantized_block(quantized, y, x, true, false, false);
     dct_YCrCB_image* dequantized = dequantization_8x8(quantized);
-    print_dct_block(dequantized, y, x, true, false, false);
+    // print_dct_block(dequantized, y, x, true, false, false);
 
     YCrCB_image* idcted = IDCT_8x8(dequantized);
 

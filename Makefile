@@ -23,3 +23,8 @@ run:
 clean:
 	rm bin/*
 	rm main
+
+all:
+	make clean
+	make build
+	make run
