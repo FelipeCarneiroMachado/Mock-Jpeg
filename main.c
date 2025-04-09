@@ -5,18 +5,23 @@
 #include "lib/jpeg/dct.h"
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
     bmp_image* bmp = bmp_read("assets/sample2.bmp");
     if (bmp == NULL) {
         perror("Error reading file\n");
         return 1;
     }
 
-    set_compression_factor(1.0);
+    set_compression_factor(strtod(argv[1], NULL));
     YCrCB_image* ycc = bmp_to_yCbCr(bmp);
     dct_YCrCB_image* dcted= DCT_8x8(ycc);
+    int32_t y = 800, x = 640;
+    print_dct_block(dcted, y, x, true, false, false);
     quantized_dct_image* quantized= dct_quantization_8x8(dcted);
+    print_quantized_block(quantized, y, x, true, false, false);
     dct_YCrCB_image* dequantized = dequantization_8x8(quantized);
+    print_dct_block(dequantized, y, x, true, false, false);
+
     YCrCB_image* idcted = IDCT_8x8(dequantized);
 
 

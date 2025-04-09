@@ -9,6 +9,8 @@
 
 #ifndef DCT_H
 #define DCT_H
+#include <stdbool.h>
+
 #include "../imIO/y_cb_cr.h"
 #include <stdint.h>
 
@@ -18,7 +20,7 @@
     typedef YCrCB_image dct_YCrCB_image;
 
     // Semantic type for quantized pixels
-    typedef uint8_t quantized_px_t;
+    typedef int32_t quantized_px_t;
 
 
     // Return type for the quantization process
@@ -43,5 +45,9 @@
     quantized_dct_image* dct_quantization_8x8(dct_YCrCB_image *img);
 
     dct_YCrCB_image* dequantization_8x8(quantized_dct_image* img);
+
+    // DEBUG FUNCTIONS
+    void print_quantized_block(quantized_dct_image* img, int32_t y, int32_t x, bool Y, bool Cr, bool Cb);
+    void print_dct_block(dct_YCrCB_image* img, int32_t y, int32_t x, bool Y, bool Cr, bool Cb);
 
 #endif //DCT_H

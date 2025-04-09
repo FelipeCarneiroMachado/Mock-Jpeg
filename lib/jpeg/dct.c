@@ -302,6 +302,67 @@ dct_YCrCB_image* dequantization_8x8(quantized_dct_image* img) {
     return dct;
 }
 
+/*
+ * DEBUG FUNCTIONS
+ */
 
 
+void print_quantized_block(quantized_dct_image* img, int32_t y, int32_t x, bool Y, bool Cr, bool Cb) {
+    if (Y) {
+        printf("Y component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%d, ", img->Y_quantized[y + i][x + j]);
+            printf("]\n");
+        }
+    }
+    if (Cb) {
+        printf("Cb component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%d, ", img->Cb_quantized[y/2 + i][x/2 + j]);
+            printf("]\n");
+        }
+    }
+    if (Cr) {
+        printf("Cr component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%d, ", img->Cr_quantized[y/2 + i][x/2 + j]);
+            printf("]\n");
+        }
+    }
+}
 
+void print_dct_block(dct_YCrCB_image* img, int32_t y, int32_t x, bool Y, bool Cr, bool Cb) {
+    if (Y) {
+        printf("Y component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%.2f, ", img->Y_data[y + i][x + j]);
+            printf("]\n");
+        }
+    }
+    if (Cr) {
+        printf("Cb component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%.2f ", img->Cb_data[y/2 + i][x/2 + j]);
+            printf("]\n");
+        }
+    }
+    if (Cb) {
+        printf("Cr component\n");
+        for (int i = 0; i < 8; i += 1) {
+            printf("[");
+            for (int j = 0; j < 8; j += 1)
+                printf("%.2f, ", img->Cr_data[y/2 + i][x/2 + j]);
+            printf("]\n");
+        }
+    }
+}

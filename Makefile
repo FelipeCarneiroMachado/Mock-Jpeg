@@ -18,7 +18,7 @@ build: bmp y_cb_cr dct
 	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o $(LDFLAGS) -o main
 
 run:
-	./main
+	./main 3.0
 
 clean:
 	rm bin/*
