@@ -5,8 +5,12 @@
 #define VECTORIZATION_H
 #include <stdint.h>
 #include "dct.h"
-// WARNING, Cb and Cr components are subject to 4:2:0 undersampling, therefore have half of the height and width
+
+
+// Simple struct to contain the image post vectorization
 typedef struct {
+    // Dimensions refer to the block matrix, not to the original image dimensions
+    // WARNING, Cb and Cr components are subject to 4:2:0 undersampling, therefore have half of the height and width
     int32_t height;
     int32_t width;
     // Each is a matrix of arrays, each array correspond to a single block, vectorized
@@ -23,7 +27,7 @@ void vectorized_img_free(vectorized_img** img);
 vectorized_img* vectorize_quantized_img(quantized_dct_image* img);
 
 // Returns the vectorized image to normal shape
-quantized_dct_image* devectorize_img(vectorized_img* vec_img);
+quantized_dct_image* devectorize_img(const vectorized_img* vec_img);
 
 
 #endif //VECTORIZATION_H

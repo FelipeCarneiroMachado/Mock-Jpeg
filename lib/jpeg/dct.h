@@ -32,7 +32,12 @@
         quantized_px_t** Cb_quantized;
     } quantized_dct_image;
 
-    // Sets globally the compression factor
+// Allocation and creation of the quantized_dct_image
+    quantized_dct_image* new_quantized_dct_image(int32_t height, int32_t width);
+// Deallocation of quantized image
+    void free_quantized_px_t_matrix(quantized_px_t*** mat, int32_t height);
+
+// Sets globally the compression factor
     void set_compression_factor(double factor);
 
 

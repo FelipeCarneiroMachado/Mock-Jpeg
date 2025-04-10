@@ -13,12 +13,16 @@ bmp:
 y_cb_cr:
 	gcc -c $(CFLAGS) lib/imIO/y_cb_cr.c -o bin/y_cb_cr.o
 
-build: bmp y_cb_cr dct
+vectorization:
+	gcc -c $(CFLAGS) lib/jpeg/vectorization.c -o bin/vectorization.o
+
+
+build: bmp y_cb_cr dct vectorization
 	gcc -c $(CFLAGS)   main.c -o bin/main.o
-	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o $(LDFLAGS) -o main
+	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o $(LDFLAGS) -o main
 
 run:
-	./main 3.0
+	./main 8.0
 
 clean:
 	rm bin/*
