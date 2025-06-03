@@ -4,6 +4,43 @@
 #include "lib/imIO/y_cb_cr.h"
 #include "lib/jpeg/dct.h"
 #include "lib/jpeg/vectorization.h"
+#include "lib/jpeg/diff_rle.h"
+
+/*void setDC(int32_t (**aarrays)[64], int32_t (**barrays)[64],int32_t height, int32_t width){
+    for(int32_t i = 0;i<height;i++){
+        for(int32_t j = 0;j<width;j++){
+            barrays[i][j][0] = aarrays[i][j][0];
+        }
+    }
+}
+    
+void setallDC(vectorized_img* a, vectorized_img* b){
+    uint32_t height = a->height;
+    uint32_t width = a->width;
+    setDC(a->Y_block_arrays,b->Y_block_arrays,height,width);
+    setDC(a->Cb_block_arrays,b->Cb_block_arrays,height/2,width/2);
+    setDC(a->Cr_block_arrays,b->Cr_block_arrays,height/2,width/2);
+}*/
+
+void printAC(int32_t (**aarrays)[64]){
+    for(int32_t i = 35;i<38;i++){
+        for(int32_t j = 1;j<64;j++){
+            printf("%d ",aarrays[35][i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void printAC2(pair (**aarrays)[63]){
+    for(int32_t i = 35;i<38;i++){
+        for(int32_t j = 0;j<63;j++){
+            printf("(%d,%d) ",aarrays[35][i][j].first,aarrays[35][i][j].second);
+        }
+        printf("\n");
+    }
+}
+
+
 
 int main(int argc, char *argv[]) {
     bmp_image* bmp = bmp_read("assets/sample2.bmp");
@@ -20,7 +57,15 @@ int main(int argc, char *argv[]) {
     quantized_dct_image* quantized= dct_quantization_8x8(dcted);
     // print_quantized_block(quantized, y, x, true, false, false);
     vectorized_img* vec = vectorize_quantized_img(quantized);
-    quantized_dct_image* qt_after = devectorize_img(vec);
+    rlediff_img* part_img = partial_encode(vec);
+    vectorized_img* vec_after = partial_decode(part_img);
+    printf("original:\n");
+    printAC(vec->Y_block_arrays);
+    printf("encoded:\n");
+    printAC2(part_img->Y_block_AC);
+    printf("decoded:\n");
+    printAC(vec_after->Y_block_arrays);
+    quantized_dct_image* qt_after = devectorize_img(vec_after);
 
     dct_YCrCB_image* dequantized = dequantization_8x8(qt_after);
     // print_dct_block(dequantized, y, x, true, false, false);
