@@ -5,34 +5,34 @@
 #include<string.h>
 
 void intToBinary(int value, int bits, char *out) {
-    for (int i = bits - 1; i >= 0; i--) {
-        out[bits - 1 - i] = (value & (1 << i)) ? '1' : '0';
-    }
-    out[bits] = '\0';
+        for (int i = bits - 1; i >= 0; i--) {
+            out[bits - 1 - i] = (value & (1 << i)) ? '1' : '0';
+        }
+        out[bits] = '\0';
 }
 
-int32_t binaryToInt(char *string){
+int32_t binaryToInt(char *string) {
     int32_t num = 0;
     int32_t len = strlen(string);
-    char temp[len+1];
-    strcpy(temp, string);
-    if(temp[0]=='0'){
+
+    if (len == 0) return 0;
+
+    if (string[0] == '1') {
         for (int i = 0; i < len; i++) {
-                temp[i] = (temp[i] == '1') ? '0' : '1';
+            if (string[i] == '1') {
+                num += 1 << (len - i - 1);
+            }
         }
-        for(int i = 0; i<len;i++){
-            if(temp[i]=='1'){
-                num+= 1 << (len - i - 1);
+        return num;
+    } else {
+      
+        for (int i = 0; i < len; i++) {
+            if (string[i] == '0') {
+                num += 1 << (len - i - 1);
             }
         }
         return -num;
     }
-    for(int i = 0; i<len;i++){
-        if(string[i]=='1'){
-            num+= 1 << (len - i - 1);
-        }
-    }
-    return num;
 }
 
 
@@ -62,23 +62,25 @@ int32_t bitReadDC(FILE *fp, char *sbuffer, char *buffer, int32_t *buffer_level){
             for(int i = 0;i<11;i++){
                 if(strcmp(sbuffer,DCprefix[i])==0){
                     category = i;
+                    //printf("(%s)",sbuffer);
                     strcpy(sbuffer,"");
                     for(int j = 0; j<category;j++){
                         if(*buffer_level==0){
                             *buffer = fgetc(fp);
                             (*buffer_level)=8;
                         }
-                        if((*buffer & 0b10000000) == 0b10000000){
+                        if(((*buffer) & 0b10000000) == 0b10000000){
                             strcat(sbuffer,"1");
-                            *buffer<<=1;
+                            (*buffer)<<=1;
                             (*buffer_level)--;
                         }
                         else{
                             strcat(sbuffer,"0");
-                            *buffer<<=1;
+                            (*buffer)<<=1;
                             (*buffer_level)--;
                         }
                     }
+                    //printf(" -%s- ",sbuffer);
                     num = binaryToInt(sbuffer);
                     strcpy(sbuffer,"");
                     done = 1;
@@ -89,10 +91,10 @@ int32_t bitReadDC(FILE *fp, char *sbuffer, char *buffer, int32_t *buffer_level){
         }
         if(!done){
             if((*buffer_level)==0){
-            *buffer = fgetc(fp);
+            (*buffer) = fgetc(fp);
             (*buffer_level)=8;
             }
-            if((*buffer & 0b10000000) == 0b10000000){
+            if(((*buffer) & 0b10000000) == 0b10000000){
                     strcat(sbuffer,"1");
                     (*buffer)<<=1;
                     (*buffer_level)--;
@@ -155,15 +157,19 @@ int32_t categorize(int32_t component){
 
 void encodeDC(int32_t DC, FILE *fp, char *buffer, int32_t *buffer_capacity){ 
     int category = categorize(DC);
-    char mantissa[11];
+    char mantissa[11] = "";
     char string[24];
 
     if (category == 0) {
         string[0] = '\0';  
     } else {
-        if (DC > 0) {
+        if (DC >=0) {
             intToBinary(DC, category, mantissa);
-        } else {
+        }
+        else if(DC==0){
+
+        }
+        else {
             intToBinary(abs(DC), category, mantissa);
             for (int i = 0; i < category; i++) {
                 mantissa[i] = (mantissa[i] == '1') ? '0' : '1';
@@ -172,7 +178,9 @@ void encodeDC(int32_t DC, FILE *fp, char *buffer, int32_t *buffer_capacity){
     }
 
     strcpy(string,DCprefix[category]);
+    printf("(%s)\n",string);
     strcat(string,mantissa);
+    printf("-%s-\n",string);
     bitPrint(string, 0, fp, buffer, buffer_capacity);
 }
 

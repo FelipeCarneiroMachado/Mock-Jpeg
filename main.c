@@ -34,7 +34,7 @@ void printAC(int32_t (**aarrays)[64]){
 
 void printDCY(rlediff_img *img){
     for(int32_t i = 0;i<img->height;i++){
-        for(int32_t j = 1;j<img->width;j++){
+        for(int32_t j = 0;j<img->width;j++){
             printf("%d ",(img->Y_block_DC)[i][j]);
         }
         printf("\n");
@@ -71,10 +71,10 @@ int main(int argc, char *argv[]) {
 
     huffman_encode(part_img,"huffimg.bin");
     printf("até aqui tá dibas\n");
-    rlediff_img* part_after =huffman_decode("huffimg.bin");
-    printf("%s\n","orignal:");
+    printf("%s\n","original:");
     printDCY(part_img);
-    printf("%s\n","nova:");
+    rlediff_img* part_after =huffman_decode("huffimg.bin");
+    printf("\n%s\n","new:");
     printDCY(part_after);
     vectorized_img* vec_after = partial_decode(part_img);
     /*printf("original:\n");
