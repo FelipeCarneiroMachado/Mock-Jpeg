@@ -19,13 +19,16 @@ vectorization:
 diff_rle:
 	gcc -c $(CFLAGS) lib/jpeg/diff_rle.c -o bin/diff_rle.o
 
+huffman:
+	gcc -c $(CFLAGS) lib/jpeg/huffman.c -o bin/huffman.o
 
-build: bmp y_cb_cr dct vectorization diff_rle
+
+build: bmp y_cb_cr dct vectorization diff_rle huffman
 	gcc -c $(CFLAGS)   main.c -o bin/main.o
-	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o $(LDFLAGS) -o main
+	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o bin/huffman.o $(LDFLAGS) -o main
 
 run:
-	./main 8.0
+	./main 2.0 >results.txt
 
 clean:
 	rm bin/*

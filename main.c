@@ -5,6 +5,7 @@
 #include "lib/jpeg/dct.h"
 #include "lib/jpeg/vectorization.h"
 #include "lib/jpeg/diff_rle.h"
+#include "lib/jpeg/huffman.h"
 
 /*void setDC(int32_t (**aarrays)[64], int32_t (**barrays)[64],int32_t height, int32_t width){
     for(int32_t i = 0;i<height;i++){
@@ -31,6 +32,15 @@ void printAC(int32_t (**aarrays)[64]){
     }
 }
 
+void printDCY(rlediff_img *img){
+    for(int32_t i = 0;i<img->height;i++){
+        for(int32_t j = 1;j<img->width;j++){
+            printf("%d ",(img->Y_block_DC)[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 void printAC2(pair (**aarrays)[63]){
     for(int32_t i = 35;i<38;i++){
         for(int32_t j = 0;j<63;j++){
@@ -43,7 +53,7 @@ void printAC2(pair (**aarrays)[63]){
 
 
 int main(int argc, char *argv[]) {
-    bmp_image* bmp = bmp_read("assets/sample2.bmp");
+    bmp_image* bmp = bmp_read("assets/snail.bmp");
     if (bmp == NULL) {
         perror("Error reading file\n");
         return 1;
@@ -58,13 +68,21 @@ int main(int argc, char *argv[]) {
     // print_quantized_block(quantized, y, x, true, false, false);
     vectorized_img* vec = vectorize_quantized_img(quantized);
     rlediff_img* part_img = partial_encode(vec);
+
+    huffman_encode(part_img,"huffimg.bin");
+    printf("até aqui tá dibas\n");
+    rlediff_img* part_after =huffman_decode("huffimg.bin");
+    printf("%s\n","orignal:");
+    printDCY(part_img);
+    printf("%s\n","nova:");
+    printDCY(part_after);
     vectorized_img* vec_after = partial_decode(part_img);
-    printf("original:\n");
+    /*printf("original:\n");
     printAC(vec->Y_block_arrays);
     printf("encoded:\n");
     printAC2(part_img->Y_block_AC);
     printf("decoded:\n");
-    printAC(vec_after->Y_block_arrays);
+    printAC(vec_after->Y_block_arrays);*/
     quantized_dct_image* qt_after = devectorize_img(vec_after);
 
     dct_YCrCB_image* dequantized = dequantization_8x8(qt_after);
