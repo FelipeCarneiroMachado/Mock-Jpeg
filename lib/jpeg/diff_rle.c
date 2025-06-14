@@ -100,6 +100,12 @@ void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
                     while(num < 64 && block_vectorized[i][j][num] == 0) {
                         count++;
                         num++;
+                        if(count==16){
+                            block_AC[i][j][k].first = 15;
+                            block_AC[i][j][k].second = 0;
+                            count = 0;
+                            k++;
+                        }
                     }
 
                     if(num == 64) {

@@ -23,14 +23,6 @@ void setallDC(vectorized_img* a, vectorized_img* b){
     setDC(a->Cr_block_arrays,b->Cr_block_arrays,height/2,width/2);
 }*/
 
-void printAC(int32_t (**aarrays)[64]){
-    for(int32_t i = 35;i<38;i++){
-        for(int32_t j = 1;j<64;j++){
-            printf("%d ",aarrays[35][i][j]);
-        }
-        printf("\n");
-    }
-}
 
 void printDCY(rlediff_img *img){
     for(int32_t i = 0;i<img->height;i++){
@@ -41,19 +33,26 @@ void printDCY(rlediff_img *img){
     }
 }
 
-void printAC2(pair (**aarrays)[63]){
-    for(int32_t i = 35;i<38;i++){
-        for(int32_t j = 0;j<63;j++){
-            printf("(%d,%d) ",aarrays[35][i][j].first,aarrays[35][i][j].second);
+void printAC2( pair (**aarrays)[63], int height, int width){
+    for(int i = 0; i < height; i++){
+        for(int j = 0; j < width; j++){
+            printf("comp:\n");
+            for(int32_t k = 0;k<63;k++){
+                    printf("(%d,%d) ",aarrays[i][j][k].first,aarrays[i][j][k].second);
+                    if(aarrays[i][j][k].first== 0 && aarrays[i][j][k].second == 0){
+                        break;
+                    }
+            }
+            printf("\n");
         }
-        printf("\n");
     }
 }
 
 
 
+
 int main(int argc, char *argv[]) {
-    bmp_image* bmp = bmp_read("assets/snail.bmp");
+    bmp_image* bmp = bmp_read("assets/sample2.bmp");
     if (bmp == NULL) {
         perror("Error reading file\n");
         return 1;
@@ -68,27 +67,16 @@ int main(int argc, char *argv[]) {
     // print_quantized_block(quantized, y, x, true, false, false);
     vectorized_img* vec = vectorize_quantized_img(quantized);
     rlediff_img* part_img = partial_encode(vec);
-
     huffman_encode(part_img,"huffimg.bin");
-    printf("até aqui tá dibas\n");
-    printf("%s\n","original:");
-    printDCY(part_img);
-    rlediff_img* part_after =huffman_decode("huffimg.bin");
-    printf("\n%s\n","new:");
-    printDCY(part_after);
-    vectorized_img* vec_after = partial_decode(part_img);
-    /*printf("original:\n");
-    printAC(vec->Y_block_arrays);
-    printf("encoded:\n");
-    printAC2(part_img->Y_block_AC);
-    printf("decoded:\n");
-    printAC(vec_after->Y_block_arrays);*/
+    rlediff_img* part_after = huffman_decode("huffimg.bin");
+    //printAC2(part_img->Y_block_AC,part_img->height,part_img->width);
+    vectorized_img* vec_after = partial_decode(part_after);
     quantized_dct_image* qt_after = devectorize_img(vec_after);
-
     dct_YCrCB_image* dequantized = dequantization_8x8(qt_after);
     // print_dct_block(dequantized, y, x, true, false, false);
 
     YCrCB_image* idcted = IDCT_8x8(dequantized);
+    
 
 
     bmp_image* bmp2 = yCbCr_to_bmp(idcted);
