@@ -186,23 +186,37 @@ bmp_image* bmp_read(const char* filename) {
     }
 
     // Pixel data reading
+    int32_t h_padding = 0;
+    int32_t v_padding = 0;
+    if (bmp->infoHeader->width % 16 != 0)
+        h_padding = 16 - bmp->infoHeader->width % 16;
+    if (bmp->infoHeader->height % 16 != 0)
+        v_padding = 16 - bmp->infoHeader->height % 16;
 
     // Allocation
-    bmp->r_data = px_matrix_alloc(bmp->infoHeader->height, bmp->infoHeader->width);
-    bmp->g_data = px_matrix_alloc(bmp->infoHeader->height, bmp->infoHeader->width);
-    bmp->b_data = px_matrix_alloc(bmp->infoHeader->height, bmp->infoHeader->width);
+    bmp->r_data = px_matrix_alloc(bmp->infoHeader->height + v_padding, bmp->infoHeader->width + h_padding);
+    bmp->g_data = px_matrix_alloc(bmp->infoHeader->height + v_padding, bmp->infoHeader->width + h_padding);
+    bmp->b_data = px_matrix_alloc(bmp->infoHeader->height + v_padding, bmp->infoHeader->width + h_padding);
 
     fseek(fd, bmp->header->dataOffset, SEEK_SET);
 
     // Iterating through file, rows are bottom on file
-    for (int32_t i = (int32_t)bmp->infoHeader->height - 1; i >= 0; i--) {
-        for (uint32_t j = 0; j < bmp->infoHeader->width; j++) {
-            fread(&bmp->b_data[i][j], 1, 1, fd);
-            fread(&bmp->g_data[i][j], 1, 1, fd);
-            fread(&bmp->r_data[i][j], 1, 1, fd);
+    for (int32_t i = (int32_t)bmp->infoHeader->height - 1 + v_padding; i >= 0; i--) {
+        for (uint32_t j = 0; j < bmp->infoHeader->width + h_padding; j++) {
+            if (j >= bmp->infoHeader->width || i >= bmp->infoHeader->height) {
+                bmp->b_data[i][j] = 0;
+                bmp->g_data[i][j] = 0;
+                bmp->r_data[i][j] = 0;
+            }
+            else {
+                fread(&bmp->b_data[i][j], 1, 1, fd);
+                fread(&bmp->g_data[i][j], 1, 1, fd);
+                fread(&bmp->r_data[i][j], 1, 1, fd);
+            }
         }
     }
-
+    bmp->infoHeader->height += v_padding;
+    bmp->infoHeader->width += h_padding;
     return bmp;
 }
 
