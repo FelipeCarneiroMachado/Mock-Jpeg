@@ -42,10 +42,11 @@ void DC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
 }
 
 //allocates the struct that holds the image after its been runlenght and diffrerence encoded
-rlediff_img *rlediff_img_alloc(int32_t height, int32_t width){
+rlediff_img *rlediff_img_alloc(int32_t height, int32_t width, float compression_factor){
     rlediff_img* rlediff = (rlediff_img*)malloc(sizeof(rlediff_img));
     rlediff->height = height;
     rlediff->width = width;
+    rlediff->compression_factor = compression_factor;
 
     //allocates the DC matrixes
     rlediff->Y_block_DC = alloc_DC_matrix(height, width);
@@ -159,7 +160,8 @@ rlediff_img *partial_encode(vectorized_img *vectorized_img){
     //allocates the struct
     int32_t height = vectorized_img->height;
     int32_t width = vectorized_img->width;
-    rlediff_img *img = rlediff_img_alloc(height,width);
+    float compression_factor = get_compression_factor();
+    rlediff_img *img = rlediff_img_alloc(height,width,compression_factor);
 
     //fills the DC matrixes
     DC_encode(img->Y_block_DC,vectorized_img->Y_block_arrays,height,width);
