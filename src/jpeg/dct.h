@@ -40,6 +40,8 @@
 // Sets globally the compression factor
     void set_compression_factor(double factor);
 
+    // returns the global compression factor
+    double get_compression_factor();
 
     // Applies DCT in 8x8 blocks on an YCrCb image
     dct_YCrCB_image* DCT_8x8(YCrCB_image* img);

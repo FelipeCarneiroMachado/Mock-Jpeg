@@ -130,6 +130,9 @@ void set_compression_factor(double factor) {
     compression_factor = factor;
 }
 
+double get_compression_factor() {
+    return compression_factor;
+}
 
 // DCT on block, works in-place
 void apply_block_DCT_8x8(yCbCr_px** src, yCbCr_px** dest, uint32_t y, uint32_t x) {

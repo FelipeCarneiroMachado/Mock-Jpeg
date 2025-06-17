@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include "lib/imIO/bmp.h"
+#include "imIO/bmp.h"
 #include <stdlib.h>
-#include "lib/imIO/y_cb_cr.h"
-#include "lib/jpeg/dct.h"
-#include "lib/jpeg/vectorization.h"
-#include "lib/jpeg/diff_rle.h"
-#include "lib/jpeg/huffman.h"
+#include "imIO/y_cb_cr.h"
+#include "jpeg/dct.h"
+#include "jpeg/vectorization.h"
+#include "jpeg/diff_rle.h"
+#include "jpeg/huffman.h"
 
 /*void setDC(int32_t (**aarrays)[64], int32_t (**barrays)[64],int32_t height, int32_t width){
     for(int32_t i = 0;i<height;i++){
