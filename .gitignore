@@ -1,0 +1,12 @@
+*.exe
+bin
+*.o
+.vscode/
+.idea/
+.git/
+__pycache__
+*/__pycache__/
+scripts
+
+
+

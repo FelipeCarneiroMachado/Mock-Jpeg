@@ -24,7 +24,10 @@ huffman:
 app:
 	gcc -c $(CFLAGS) src/app/app.c -o bin/app.o
 
-build: bmp y_cb_cr dct vectorization diff_rle huffman app
+dirs:
+	mkdir -p bin executables
+
+build: dirs bmp y_cb_cr dct vectorization diff_rle huffman app
 	gcc -c $(CFLAGS)   src/compressor.c -o bin/compressor.o
 	gcc -c $(CFLAGS)   src/decompressor.c -o bin/decompressor.o
 	gcc  bin/compressor.o bin/app.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o bin/huffman.o $(LDFLAGS) -o executables/compressor
