@@ -14,6 +14,7 @@ typedef struct {
     // WARNING, Cb and Cr components are subject to 4:2:0 undersampling, therefore have half of the height and width
     int32_t height;
     int32_t width;
+    float compression_factor;
     // Each is a matrix of arrays, each array correspond to a single block AC components vectorized and run lenght enconded
     pair (**Y_block_AC)[63];
     pair (**Cb_block_AC)[63];
@@ -25,7 +26,7 @@ typedef struct {
 } rlediff_img;
 
 // (De)Allocation functions
-rlediff_img *rlediff_img_alloc(int32_t height, int32_t width);
+rlediff_img *rlediff_img_alloc(int32_t height, int32_t width, float compression_factor);
 void rlediff_img_free(rlediff_img **rlediff_img);
 
 

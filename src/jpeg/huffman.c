@@ -342,9 +342,11 @@ void huffman_encode(rlediff_img *rlediff_img, char *fname){
     FILE *fp = fopen(fname,"wb");
     int32_t height = rlediff_img->height;
     int32_t width = rlediff_img->width;
+    float compression_factor = rlediff_img->compression_factor;
 
     fwrite(&height,sizeof(height),1,fp);
     fwrite(&width,sizeof(width),1,fp);
+    fwrite(&compression_factor,sizeof(compression_factor),1,fp);
 
 
     encodeDCmatrix(height,width,rlediff_img->Y_block_DC, fp, &buffer, &buffer_capacity);
@@ -361,11 +363,13 @@ void huffman_encode(rlediff_img *rlediff_img, char *fname){
 rlediff_img *huffman_decode(char *huffman_name){
     char buffer = 0, sbuffer[48] = ""; 
     int32_t height =0, width = 0, buffer_level= 0;
+    float compression_factor = 0;
     FILE *fp = fopen(huffman_name,"rb");
     fread(&height,sizeof(height),1,fp);
     fread(&width,sizeof(width),1,fp);
+    fread(&compression_factor,sizeof(compression_factor),1,fp);
 
-    rlediff_img *rle_img = rlediff_img_alloc(height, width);
+    rlediff_img *rle_img = rlediff_img_alloc(height, width,compression_factor);
 
     decodeDCmatrix(height,width,rle_img->Y_block_DC,fp,&buffer,sbuffer,&buffer_level);
     decodeDCmatrix(height/2,width/2,rle_img->Cr_block_DC,fp,&buffer,sbuffer,&buffer_level);
