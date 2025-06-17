@@ -1,6 +1,8 @@
 #include "diff_rle.h"
 #include <stdlib.h>
 
+
+//allocates a matrix of pointers to arrays of 63 pairs of ints for the AC components
 pair (**alloc_AC_matrix(int32_t height, int32_t width))[63] {
     pair (**mat)[64];
     mat = malloc(height * sizeof(pair (*)[63]));
@@ -10,6 +12,8 @@ pair (**alloc_AC_matrix(int32_t height, int32_t width))[63] {
     return mat;
 }
 
+
+//allocates a matrix of pointers to ints for the DC components
 int32_t **alloc_DC_matrix(int32_t height, int32_t width){
     int32_t  **mat;
     mat = malloc(height * sizeof(int32_t*));
@@ -20,6 +24,7 @@ int32_t **alloc_DC_matrix(int32_t height, int32_t width){
 
 }
 
+//frees the matrix for the AC components
 void AC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
     for (int32_t i = 0; i < height; i++) {
         free(mat[i]);
@@ -27,6 +32,8 @@ void AC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
     free(mat);
 }
 
+
+//frees the matrix for the DC components
 void DC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
     for (int32_t i = 0; i < height; i++) {
         free(mat[i]);
@@ -34,16 +41,18 @@ void DC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
     free(mat);
 }
 
-
+//allocates the struct that holds the image after its been runlenght and diffrerence encoded
 rlediff_img *rlediff_img_alloc(int32_t height, int32_t width){
     rlediff_img* rlediff = (rlediff_img*)malloc(sizeof(rlediff_img));
     rlediff->height = height;
     rlediff->width = width;
 
+    //allocates the DC matrixes
     rlediff->Y_block_DC = alloc_DC_matrix(height, width);
     rlediff->Cb_block_DC = alloc_DC_matrix(height / 2, width / 2);
     rlediff->Cr_block_DC = alloc_DC_matrix(height / 2, width / 2);
 
+    //allocates the AC matrixes
     rlediff->Y_block_AC = alloc_AC_matrix(height, width);
     rlediff->Cb_block_AC = alloc_AC_matrix(height / 2, width / 2);
     rlediff->Cr_block_AC = alloc_AC_matrix(height / 2, width / 2);
@@ -51,11 +60,15 @@ rlediff_img *rlediff_img_alloc(int32_t height, int32_t width){
     return rlediff;
 }
 
-
+//frees the struct that holds the image after its been runlenght and diffrerence encoded
 void rlediff_img_free(rlediff_img** img) {
+
+    //frees the AC matrixes
     AC_matrix_free((*img)->Y_block_AC, (*img)->height, (*img)->width);
     AC_matrix_free((*img)->Cb_block_AC, (*img)->height / 2, (*img)->width / 2);
     AC_matrix_free((*img)->Cr_block_AC, (*img)->height / 2, (*img)->width / 2);
+
+    //frees the DC matrixes
     DC_matrix_free((*img)->Y_block_DC, (*img)->height, (*img)->width);
     DC_matrix_free((*img)->Cb_block_DC, (*img)->height / 2, (*img)->width / 2);
     DC_matrix_free((*img)->Cr_block_DC, (*img)->height / 2, (*img)->width / 2);
@@ -63,12 +76,18 @@ void rlediff_img_free(rlediff_img** img) {
     *img = NULL;
 }
 
+
+//difference encodes a matrix of DC components from a matrix of vectorized blocks
 void DC_encode(int32_t **block_DC, int32_t (**block_vectorized)[64], int32_t height, int32_t width){
+    //gets the AC component (first element of the vectorized block)
     block_DC[0][0] = block_vectorized[0][0][0];
     for(int32_t i = 0;i<height;i++){
         if(i!=0){
+            //the first component of each row is the differenc betwwen this and the one from the row above
+            //except for the very first
             block_DC[i][0] = block_vectorized[i][0][0] - block_vectorized[i-1][0][0];
         }
+        //each component after the first from each row is set to the differece between it and the component left
         for(int32_t j = 1;j<width;j++){
             block_DC[i][j] = block_vectorized[i][j][0] - block_vectorized[i][j-1][0];
         }
@@ -76,6 +95,7 @@ void DC_encode(int32_t **block_DC, int32_t (**block_vectorized)[64], int32_t hei
 
 }
 
+//diffence decodes a matrix of DC components and fills the first elements of a matrix of vectorized blocks
 void DC_decode(int32_t **block_DC, int32_t (**block_vectorized)[64], int32_t height, int32_t width){
     block_vectorized[0][0][0] = block_DC[0][0];
     for(int32_t i = 0;i<height;i++){
@@ -88,6 +108,7 @@ void DC_decode(int32_t **block_DC, int32_t (**block_vectorized)[64], int32_t hei
     }
 }
 
+//runlenght encodes a matrix of AC components from a matrix of vectorized blocks
 void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t height, int32_t width){
    for(int32_t i = 0; i < height; i++) {
         for(int32_t j = 0; j < width; j++) {
@@ -133,15 +154,19 @@ void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
 
 }
 
+//allocates and fills the struct for the image after its been difference and runlength encoded
 rlediff_img *partial_encode(vectorized_img *vectorized_img){
+    //allocates the struct
     int32_t height = vectorized_img->height;
     int32_t width = vectorized_img->width;
     rlediff_img *img = rlediff_img_alloc(height,width);
 
+    //fills the DC matrixes
     DC_encode(img->Y_block_DC,vectorized_img->Y_block_arrays,height,width);
     DC_encode(img->Cb_block_DC,vectorized_img->Cb_block_arrays,height/2,width/2);
     DC_encode(img->Cr_block_DC,vectorized_img->Cr_block_arrays,height/2,width/2);
 
+    //fills the AC matrixes
     AC_encode(img->Y_block_AC,vectorized_img->Y_block_arrays,height,width);
     AC_encode(img->Cb_block_AC,vectorized_img->Cb_block_arrays,height/2,width/2);
     AC_encode(img->Cr_block_AC,vectorized_img->Cr_block_arrays,height/2,width/2);
@@ -150,6 +175,8 @@ rlediff_img *partial_encode(vectorized_img *vectorized_img){
 
 }
 
+
+//runlenght decodes a matrix of AC components into a matrix of vectorized blocks
 void AC_decode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t height, int32_t width){
     for (int32_t i = 0; i < height; i++) {
         for (int32_t j = 0; j < width; j++) {

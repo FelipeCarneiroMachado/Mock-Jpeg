@@ -52,7 +52,7 @@ void printAC2( pair (**aarrays)[63], int height, int width){
 
 
 int main(int argc, char *argv[]) {
-    bmp_image* bmp = bmp_read("assets/sample2.bmp");
+    bmp_image* bmp = bmp_read("assets/snail.bmp");
     if (bmp == NULL) {
         perror("Error reading file\n");
         return 1;
@@ -69,9 +69,9 @@ int main(int argc, char *argv[]) {
     rlediff_img* part_img = partial_encode(vec);
     huffman_encode(part_img,"huffimg.bin");
     rlediff_img* part_after = huffman_decode("huffimg.bin");
-    //printAC2(part_img->Y_block_AC,part_img->height,part_img->width);
-    vectorized_img* vec_after = partial_decode(part_after);
-    quantized_dct_image* qt_after = devectorize_img(vec_after);
+    printAC2(part_img->Y_block_AC,part_img->height,part_img->width);
+    vectorized_img* vec_after = partial_decode(part_img);
+    quantized_dct_image* qt_after = devectorize_img(vec);
     dct_YCrCB_image* dequantized = dequantization_8x8(qt_after);
     // print_dct_block(dequantized, y, x, true, false, false);
 
