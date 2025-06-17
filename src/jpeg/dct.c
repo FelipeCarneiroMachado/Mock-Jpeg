@@ -13,7 +13,7 @@ double dct_coefficient_matrix[8][8];
 
 double idct_coefficient_matrix[8][8];
 
-double compression_factor = 1;
+double compression_factor = 1.0;
 
 // Checks if its already computed
 bool is_dct_computed = false;

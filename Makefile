@@ -3,7 +3,6 @@
 CFLAGS = -Wall -O2 -g -Wextra
 LDFLAGS = -lm
 
-
 dct:
 	gcc -c $(CFLAGS) src/jpeg/dct.c -o bin/dct.o
 
@@ -22,18 +21,17 @@ diff_rle:
 huffman:
 	gcc -c $(CFLAGS) src/jpeg/huffman.c -o bin/huffman.o
 
+app:
+	gcc -c $(CFLAGS) src/app/app.c -o bin/app.o
 
-build: bmp y_cb_cr dct vectorization diff_rle huffman
-	gcc -c $(CFLAGS)   src/main.c -o bin/main.o
-	gcc  bin/main.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o bin/huffman.o $(LDFLAGS) -o bin/main
+build: bmp y_cb_cr dct vectorization diff_rle huffman app
+	gcc -c $(CFLAGS)   src/compressor.c -o bin/compressor.o
+	gcc -c $(CFLAGS)   src/decompressor.c -o bin/decompressor.o
+	gcc  bin/compressor.o bin/app.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o bin/huffman.o $(LDFLAGS) -o executables/compressor
+	gcc  bin/decompressor.o bin/app.o bin/bmp.o bin/y_cb_cr.o bin/dct.o bin/vectorization.o bin/diff_rle.o bin/huffman.o $(LDFLAGS) -o executables/decompressor
 
-run:
-	./main 2.0 
 
 clean:
 	rm bin/*
+	rm executables/*
 
-all:
-	make clean
-	make build
-	make run

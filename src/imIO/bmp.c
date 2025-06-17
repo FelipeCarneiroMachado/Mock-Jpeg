@@ -42,13 +42,7 @@ px_t** px_matrix_alloc(uint32_t height, uint32_t width) {
 
 // Memory deallocation for bmp struct
 void bmp_free(bmp_image** bmp) {
-    if ((*bmp)->header != NULL) {
-        free((*bmp)->header);
-    }
-    if ((*bmp)->infoHeader != NULL) {
-        free((*bmp)->infoHeader);
 
-    }
     if ((*bmp)->r_data != NULL) {
         free_px_matrix(&((*bmp)->r_data), (*bmp)->infoHeader->height, (*bmp)->infoHeader->width);
     }
@@ -57,6 +51,13 @@ void bmp_free(bmp_image** bmp) {
     }
     if ((*bmp)->b_data != NULL) {
         free_px_matrix(&((*bmp)->b_data), (*bmp)->infoHeader->height, (*bmp)->infoHeader->width);
+    }
+    if ((*bmp)->header != NULL) {
+        free((*bmp)->header);
+    }
+    if ((*bmp)->infoHeader != NULL) {
+        free((*bmp)->infoHeader);
+
     }
     free(*bmp);
 }

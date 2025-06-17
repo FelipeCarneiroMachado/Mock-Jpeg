@@ -4,6 +4,7 @@
 
 #include "y_cb_cr.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -19,7 +20,7 @@ yCbCr_px** yCbCr_matrix_alloc(int32_t width, int32_t height) {
 
 // Deallocation for pixel data
 void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t width, int32_t height) {
-    for (int i = 0; i < width; i++) {
+    for (int i = 0; i < height; i++) {
         free((*matrix)[i]);
     }
     free(*matrix);
