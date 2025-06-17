@@ -118,11 +118,13 @@ void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
 
             while(num < 64 && k < 63) {
                 if(block_vectorized[i][j][num] == 0) {
+                    //counts how many zeroes there are in until the next non zero number
                     int32_t count = 0;
                     while(num < 64 && block_vectorized[i][j][num] == 0) {
                         count++;
                         num++;
                         if(count==16){
+                            //if there are 16 sequential zeros saves it as (16,0) for huffman reasons
                             block_AC[i][j][k].first = 15;
                             block_AC[i][j][k].second = 0;
                             count = 0;
@@ -131,15 +133,18 @@ void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
                     }
 
                     if(num == 64) {
+                        //if it reaches the end of the vectorized block it saves a (0,0)
                         block_AC[i][j][k].first = 0;
                         block_AC[i][j][k].second = 0;
                         break;
                     }
+                    //saves the pair of (count, value)
                     block_AC[i][j][k].first = count;
                     block_AC[i][j][k].second = block_vectorized[i][j][num];
                     num++;
                     k++;
                 } else {
+                    //if there were no zeros in between saves the pair (0,value)
                     block_AC[i][j][k].first = 0;
                     block_AC[i][j][k].second = block_vectorized[i][j][num];
                     num++;
@@ -147,6 +152,7 @@ void AC_encode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
                 }
             }
             if(k < 63) {
+                //condition for if the last number is not zero
                 block_AC[i][j][k].first = 0;
                 block_AC[i][j][k].second = 0;
             }
@@ -225,15 +231,20 @@ void AC_decode(pair (**block_AC)[63], int32_t (**block_vectorized)[64], int32_t 
 }
 
 
+//runlenght and difference decodes the image into a struct that stores the image vectorized blocks
 vectorized_img *partial_decode(rlediff_img *rlediff_img){
+    //allocates the vectorized_img struct
     int32_t height = rlediff_img->height;
     int32_t width = rlediff_img->width;
-   vectorized_img *img = vectorized_img_alloc(height,width);
+    vectorized_img *img = vectorized_img_alloc(height,width);
 
+
+    //fills the DC components(first elements of the vectors)
     DC_decode(rlediff_img->Y_block_DC,img->Y_block_arrays,height,width);
     DC_decode(rlediff_img->Cb_block_DC,img->Cb_block_arrays,height/2,width/2);
     DC_decode(rlediff_img->Cr_block_DC,img->Cr_block_arrays,height/2,width/2);
 
+    //fills the AC components(other elements of the vector)
     AC_decode(rlediff_img->Y_block_AC,img->Y_block_arrays,height,width);
     AC_decode(rlediff_img->Cb_block_AC,img->Cb_block_arrays,height/2,width/2);
     AC_decode(rlediff_img->Cr_block_AC,img->Cr_block_arrays,height/2,width/2);
