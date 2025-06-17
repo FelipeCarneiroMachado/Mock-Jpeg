@@ -7,6 +7,4 @@ bin
 __pycache__
 */__pycache__/
 scripts
-
-
-
+cmake-build-debug
