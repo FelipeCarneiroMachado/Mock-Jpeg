@@ -67,6 +67,11 @@ Para remover os arquivos executáveis e objeto, basta executar `make clean`.
 
 O código compila com poucos warnings (irrelevantes para execução plena do código) e executa sem erros para todas as imagens testadas.
 
+
+### Inspeção visual
+
+As imagens comprimidas e posteriormente recuperadas apresentam os efeitos clássicos da compressão JPEG quando observadas sobre zoom, porém, retém todas as suas características básicas, permitindo a visualização perfeita das imagens.
+
 ### *Memory Leaks*
 
 Utilizamos a ferramenta `memcheck` do valgrind para buscar vazamentos de memória, a qual indicou que toda memória alocada é corretamente desalocada ao fim da execução de ambos o compressor e o descompressor.
