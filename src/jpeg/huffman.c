@@ -41,8 +41,8 @@ int32_t binaryToInt(char *string) {
 
 //given a string of binary prints it char by char in a file, stores the bits in a buffer until it makes a full char
 void bitPrint(char *string, int32_t final, FILE *fp, char *buffer, int32_t *buffer_capacity){
-    int i=0;
-    while(i < strlen(string)){
+    int32_t i=0;
+    while(i < (int32_t) strlen(string)){
         *buffer = (*buffer<<1) | (string[i]=='1');
         (*buffer_capacity)++;
         if(*buffer_capacity == 8){

@@ -4,7 +4,7 @@
 
 //allocates a matrix of pointers to arrays of 63 pairs of ints for the AC components
 pair (**alloc_AC_matrix(int32_t height, int32_t width))[63] {
-    pair (**mat)[64];
+    pair (**mat)[63];
     mat = malloc(height * sizeof(pair (*)[63]));
     for (int32_t i = 0; i < height; i++) {
         mat[i] = malloc(width * sizeof(pair [63]));
@@ -25,7 +25,7 @@ int32_t **alloc_DC_matrix(int32_t height, int32_t width){
 }
 
 //frees the matrix for the AC components
-void AC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
+void AC_matrix_free(pair (**mat)[63], int32_t height) {
     for (int32_t i = 0; i < height; i++) {
         free(mat[i]);
     }
@@ -34,14 +34,14 @@ void AC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
 
 
 //frees the matrix for the DC components
-void DC_matrix_free(pair (**mat)[64], int32_t height, int32_t width) {
+void DC_matrix_free(int32_t** mat, int32_t height) {
     for (int32_t i = 0; i < height; i++) {
         free(mat[i]);
     }
     free(mat);
 }
 
-//allocates the struct that holds the image after its been runlenght and diffrerence encoded
+//allocates the struct that holds the image after it's been runlenght and diffrerence encoded
 rlediff_img *rlediff_img_alloc(int32_t height, int32_t width, float compression_factor){
     rlediff_img* rlediff = (rlediff_img*)malloc(sizeof(rlediff_img));
     rlediff->height = height;
@@ -61,18 +61,18 @@ rlediff_img *rlediff_img_alloc(int32_t height, int32_t width, float compression_
     return rlediff;
 }
 
-//frees the struct that holds the image after its been runlenght and diffrerence encoded
+//frees the struct that holds the image after it's been runlenght and diffrerence encoded
 void rlediff_img_free(rlediff_img** img) {
 
     //frees the AC matrixes
-    AC_matrix_free((*img)->Y_block_AC, (*img)->height, (*img)->width);
-    AC_matrix_free((*img)->Cb_block_AC, (*img)->height / 2, (*img)->width / 2);
-    AC_matrix_free((*img)->Cr_block_AC, (*img)->height / 2, (*img)->width / 2);
+    AC_matrix_free((*img)->Y_block_AC, (*img)->height);
+    AC_matrix_free((*img)->Cb_block_AC, (*img)->height / 2);
+    AC_matrix_free((*img)->Cr_block_AC, (*img)->height / 2);
 
     //frees the DC matrixes
-    DC_matrix_free((*img)->Y_block_DC, (*img)->height, (*img)->width);
-    DC_matrix_free((*img)->Cb_block_DC, (*img)->height / 2, (*img)->width / 2);
-    DC_matrix_free((*img)->Cr_block_DC, (*img)->height / 2, (*img)->width / 2);
+    DC_matrix_free((*img)->Y_block_DC, (*img)->height);
+    DC_matrix_free((*img)->Cb_block_DC, (*img)->height / 2);
+    DC_matrix_free((*img)->Cr_block_DC, (*img)->height / 2);
     free(*img);
     *img = NULL;
 }

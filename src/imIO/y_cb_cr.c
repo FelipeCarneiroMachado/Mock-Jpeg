@@ -19,7 +19,7 @@ yCbCr_px** yCbCr_matrix_alloc(int32_t width, int32_t height) {
 }
 
 // Deallocation for pixel data
-void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t width, int32_t height) {
+void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t height) {
     for (int i = 0; i < height; i++) {
         free((*matrix)[i]);
     }
@@ -40,9 +40,9 @@ YCrCB_image* new_YCrCB_image(int32_t width, int32_t height) {
 
 // Deallocation for images
 void free_yCbCr_image(YCrCB_image** img) {
-    free_yCbCr_matrix(&(*img)->Y_data, (*img)->width, (*img)->height);
-    free_yCbCr_matrix(&(*img)->Cb_data, (*img)->width / 2, (*img)->height / 2);
-    free_yCbCr_matrix(&(*img)->Cr_data, (*img)->width / 2, (*img)->height / 2);
+    free_yCbCr_matrix(&(*img)->Y_data, (*img)->height);
+    free_yCbCr_matrix(&(*img)->Cb_data, (*img)->height / 2);
+    free_yCbCr_matrix(&(*img)->Cr_data, (*img)->height / 2);
     free(*img);
 }
 
@@ -78,9 +78,9 @@ yCbCr_px cr_block_avg(bmp_image* img, int32_t y, int32_t x) {
 
 // Conversion bmp -> YCrCb
 YCrCB_image* bmp_to_yCbCr(bmp_image* img) {
-    YCrCB_image* new_img = new_YCrCB_image(img->infoHeader->width, img->infoHeader->height);
-    for (int i = 0; i < img->infoHeader->height; i++) {
-        for (int j = 0; j < img->infoHeader->width; j++) {
+    YCrCB_image* new_img = new_YCrCB_image((int32_t) img->infoHeader->width, (int32_t) img->infoHeader->height);
+    for (uint32_t i = 0; i < img->infoHeader->height; i++) {
+        for (uint32_t j = 0; j < img->infoHeader->width; j++) {
             new_img->Y_data[i][j] = (yCbCr_px) 0.299 * img->r_data[i][j] + 0.587 * img->g_data[i][j] + 0.114 * img->b_data[i][j];
             if (i % 2 == 0 && j % 2 == 0) {
                 new_img->Cb_data[i / 2][j / 2] = cb_block_avg(img, i, j);

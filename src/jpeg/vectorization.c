@@ -105,7 +105,7 @@ vectorized_img* vectorized_img_alloc(int32_t height, int32_t width) {
 }
 
 // Deallocates memory for block matrix
-void block_matrix_free(int32_t (**mat)[64], int32_t height, int32_t width) {
+void block_matrix_free(int32_t (**mat)[64], int32_t height) {
     for (int32_t i = 0; i < height; i++) {
         free(mat[i]);
     }
@@ -113,9 +113,9 @@ void block_matrix_free(int32_t (**mat)[64], int32_t height, int32_t width) {
 }
 // Deallocates memory for img struct and matrix
 void vectorized_img_free(vectorized_img** img) {
-    block_matrix_free((*img)->Y_block_arrays, (*img)->height, (*img)->width);
-    block_matrix_free((*img)->Cb_block_arrays, (*img)->height / 2, (*img)->width / 2);
-    block_matrix_free((*img)->Cr_block_arrays, (*img)->height / 2, (*img)->width / 2);
+    block_matrix_free((*img)->Y_block_arrays, (*img)->height);
+    block_matrix_free((*img)->Cb_block_arrays, (*img)->height / 2);
+    block_matrix_free((*img)->Cr_block_arrays, (*img)->height / 2);
     free(*img);
     *img = NULL;
 }

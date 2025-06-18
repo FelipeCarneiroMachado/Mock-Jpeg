@@ -36,7 +36,7 @@
     yCbCr_px get_Cb(YCrCB_image* img, int32_t x, int32_t y);
 
     // Deallocation
-    void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t width, int32_t height);
+    void free_yCbCr_matrix(yCbCr_px*** matrix, int32_t height);
 
     // Allocation and initialization
     YCrCB_image* new_YCrCB_image(int32_t width, int32_t height);

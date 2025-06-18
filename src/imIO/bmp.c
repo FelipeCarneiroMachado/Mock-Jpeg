@@ -23,7 +23,7 @@ bmp_image* new_bmp_image() {
     return bmp;
 }
 // Memory deallocation for pixel data
-void free_px_matrix(px_t ***matrix, uint32_t nrows, uint32_t ncols) {
+void free_px_matrix(px_t ***matrix, uint32_t nrows) {
     for (uint32_t i = 0; i < nrows; i++) {
         free((*matrix)[i]);
     }
@@ -34,7 +34,7 @@ void free_px_matrix(px_t ***matrix, uint32_t nrows, uint32_t ncols) {
 // Memory eallocation for pixel data
 px_t** px_matrix_alloc(uint32_t height, uint32_t width) {
     px_t** matrix = (px_t**)malloc(sizeof(px_t*) * height);
-    for (int i = 0; i < height; i++) {
+    for (uint32_t i = 0; i < height; i++) {
         matrix[i] = (px_t*)malloc(sizeof(px_t) * width);
     }
     return matrix;
@@ -44,13 +44,13 @@ px_t** px_matrix_alloc(uint32_t height, uint32_t width) {
 void bmp_free(bmp_image** bmp) {
 
     if ((*bmp)->r_data != NULL) {
-        free_px_matrix(&((*bmp)->r_data), (*bmp)->infoHeader->height, (*bmp)->infoHeader->width);
+        free_px_matrix(&((*bmp)->r_data), (*bmp)->infoHeader->height);
     }
     if ((*bmp)->g_data != NULL) {
-        free_px_matrix(&((*bmp)->g_data), (*bmp)->infoHeader->height, (*bmp)->infoHeader->width);
+        free_px_matrix(&((*bmp)->g_data), (*bmp)->infoHeader->height);
     }
     if ((*bmp)->b_data != NULL) {
-        free_px_matrix(&((*bmp)->b_data), (*bmp)->infoHeader->height, (*bmp)->infoHeader->width);
+        free_px_matrix(&((*bmp)->b_data), (*bmp)->infoHeader->height);
     }
     if ((*bmp)->header != NULL) {
         free((*bmp)->header);
@@ -187,6 +187,8 @@ bmp_image* bmp_read(const char* filename) {
     }
 
     // Pixel data reading
+
+    // Requires padding when it isn't 16 divisible, because of subsampling
     int32_t h_padding = 0;
     int32_t v_padding = 0;
     if (bmp->infoHeader->width % 16 != 0)
@@ -204,7 +206,7 @@ bmp_image* bmp_read(const char* filename) {
     // Iterating through file, rows are bottom on file
     for (int32_t i = (int32_t)bmp->infoHeader->height - 1 + v_padding; i >= 0; i--) {
         for (uint32_t j = 0; j < bmp->infoHeader->width + h_padding; j++) {
-            if (j >= bmp->infoHeader->width || i >= bmp->infoHeader->height) {
+            if (j >=  bmp->infoHeader->width || i >= (int32_t) bmp->infoHeader->height) {
                 bmp->b_data[i][j] = 0;
                 bmp->g_data[i][j] = 0;
                 bmp->r_data[i][j] = 0;
@@ -218,6 +220,7 @@ bmp_image* bmp_read(const char* filename) {
     }
     bmp->infoHeader->height += v_padding;
     bmp->infoHeader->width += h_padding;
+    fclose(fd);
     return bmp;
 }
 
@@ -266,7 +269,7 @@ int bmp_save(bmp_image *bmp, const char *filename) {
             fwrite(&bmp->r_data[i][j], 1, 1, out);
         }
     }
-
+    fclose(out);
     return 1;
 
 }
