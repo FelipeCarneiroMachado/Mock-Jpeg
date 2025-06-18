@@ -1,6 +1,6 @@
-//
-// Created by felipe on 6/17/25.
-//
+// ## Realizado por:
+// - Felipe Carneiro Machado - 14569373
+// - Augusto Cavalcante Barbosa Pereira - 14651531
 
 #include "app.h"
 

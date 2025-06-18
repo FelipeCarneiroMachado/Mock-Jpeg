@@ -1,5 +1,7 @@
 # Project Makefile
-
+#// ## Realizado por:
+#// - Felipe Carneiro Machado - 14569373
+#// - Augusto Cavalcante Barbosa Pereira - 14651531
 CFLAGS = -Wall -O2
 LDFLAGS = -lm
 
