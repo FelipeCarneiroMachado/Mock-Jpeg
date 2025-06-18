@@ -21,6 +21,8 @@ A informação gerada no final pelo compressor é salva em um arquivo binário d
 
 ### Sobre a organização do código
 
+O código foi desenvolvido em linguagem C seguindo o padrão C99, sem uso de bibliotecas fora a biblioteca padrão da linguagem.
+
 Segue a estrutura de diretórios
 
 ```
@@ -58,3 +60,34 @@ Para executar o descompressor, execute (assumindo que está no diretório raiz d
 ```
 
 Analogamente ao compressor, `<bin_fonte>` é o arquivo binário gerado pelo compressor e `<arquivo_destino>` é o arquivo .bmp a ser gerado. Este é um bmp completo que pode ser aberto com software padrão para visualização de imagens.
+
+Para remover os arquivos executáveis e objeto, basta executar `make clean`.
+
+## Testes 
+
+O código compila com poucos warnings (irrelevantes para execução plena do código) e executa sem erros para todas as imagens testadas.
+
+### *Memory Leaks*
+
+Utilizamos a ferramenta `memcheck` do valgrind para buscar vazamentos de memória, a qual indicou que toda memória alocada é corretamente desalocada ao fim da execução de ambos o compressor e o descompressor.
+
+### *Benchmarks*
+
+```
+user@myMachine:~/path/to/projeto_final$ file assets/sample2.bmp 
+assets/sample2.bmp: PC bitmap, Windows 3.x format, 1920 x 1280 x 24, image size 7372800, resolution 3780 x 3780 px/m, cbSize 7372854, bits offset 54
+user@myMachine:~/path/to/projeto_final$ time ./executables/compressor assets/sample2.bmp results/result.bin 3.0
+Compression sucessuful
+Rate achieved: 98.46%
+
+real    0m0,169s
+user    0m0,152s
+sys     0m0,017s
+user@myMachine:~/path/to/projeto_final$ time ./executables/decompressor results/result.bin results/result.bmp
+
+real    0m0,357s
+user    0m0,326s
+sys     0m0,025s
+user@myMachine:~/path/to/projeto_final$ 
+
+```

@@ -1,6 +1,6 @@
 # Project Makefile
 
-CFLAGS = -Wall -O0 -g -Wextra
+CFLAGS = -Wall -O2
 LDFLAGS = -lm
 
 dct:
